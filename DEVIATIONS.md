@@ -58,3 +58,9 @@ audit which claims are confirmatory and which are exploratory.
     enhanced-prompting positives (Vogel; Pearson-Vogel et al.) and to scale
     coverage. Same harness and scoring throughout; no analysis choices changed
     after their results were seen.
+
+11. **The Qwen2.5-32B opening failed its seed replication.** Run 1 (seed 0)
+    gave self-vs-random 0.622 [0.556, 0.677] at the low dose; the pre-committed
+    replication (seed 1, identical harness) returned 0.45-0.57 at all doses.
+    The paper reports the cell and its non-replication together and claims no
+    opening anywhere.

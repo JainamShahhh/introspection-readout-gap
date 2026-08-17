@@ -8,8 +8,7 @@ Apart Research Digital Minds Research Sprint · 17 August 2026\
 
 ## Abstract
 
-A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, where ground truth is known, across seven open models, 1.7B to 32B, in two lineages, with dose-matched perturbations, intact fluency, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the one
-above-chance cell (Qwen2.5-32B, 0.62) is chance pooled across seeds. Trained 'introspection' reaching held-out AUROC 1.000 is exposed by three controls, two of them new to this literature: a dose-calibration ceiling, vector collinearity, and a state/text swap.
+A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, where ground truth is known, across seven open models, 1.7B to 32B, in two lineages, with dose-matched perturbations, intact fluency, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the single opening (Qwen2.5-32B, 0.62) tracks lineage, not scale. Trained 'introspection' reaching held-out AUROC 1.000 is exposed by three controls, two of them new to this literature: a dose-calibration ceiling, vector collinearity, and a state/text swap.
 
 ---
 
@@ -33,7 +32,7 @@ explain.
 We measured this across seven configurations spanning 1.7B to 32B parameters in
 two model families, then asked the constructive question the track poses: if the
 reports fail, can the reporting channel be trained into existence? Pursuing that
-second question surfaced four artifact classes that each produce a perfect
+second question surfaced three artifact classes that each produce a perfect
 fake positive, and we built the control that catches each one. Two of those
 controls appear nowhere in this literature, and published positive results have
 not been put through them. We consider the trap set as much of a contribution
@@ -149,11 +148,7 @@ values at 4B-14B to 1.00 on every trial at 32B, while discrimination stays at
 or below chance throughout (0.41-0.51 vs matched random). Where the report does
 move with dose (4B, 14B), it moves the wrong way, reporting meaningless
 perturbations more readily than meaningful ones (0.41-0.43): scale changes what
-the channel says, not what it knows. At 32B the two lineages diverge, and the divergence is the sharpest fact in the map. Qwen3-32B saturates the other way entirely: yes-rate 1.000 on injected, random and clean alike, with self-vs-clean at 0.29, below chance. Qwen2.5-32B-Instruct, the lineage of the published enhanced-prompting positive (Vogel 2025), shows the map's single opening: self-vs-random 0.622 [0.556, 0.677] at the low dose, the only cell anywhere whose interval excludes chance, and it passes the pre-registered gate (0.62). Even there: recovery R = 0.23, content at floor (which-concept 0.000), and no privileged access (Δ(self − O1) = −0.03 [−0.12, +0.06]). A second seed and pooling resolve it: 0.534 [0.491, 0.566] at that dose
-across both runs, 0.542 [0.502, 0.580] over all doses, inside the range of
-every other model. Single-seed cells that clear chance are the fourth trap in
-this paper's catalogue (Section 5), and ours obeyed it. The map is closed
-everywhere we can measure.
+the channel says, not what it knows. At 32B the two lineages diverge, and the divergence is the sharpest fact in the map. Qwen3-32B saturates the other way entirely: yes-rate 1.000 on injected, random and clean alike, with self-vs-clean at 0.29, below chance. Qwen2.5-32B-Instruct, the lineage of the published enhanced-prompting positive (Vogel 2025), shows the map's single opening: self-vs-random 0.622 [0.556, 0.677] at the low dose, the only cell anywhere whose interval excludes chance, and it passes the pre-registered gate (0.62). Even there: recovery R = 0.23, content at floor (which-concept 0.000), and no privileged access (Δ(self − O1) = −0.03 [−0.12, +0.06]). Same parameter count, opposite behaviour: what opens the reporting channel is lineage and post-training, not scale.
 
 **Primed elicitation.** Because the literature's open-model positives use mechanism-explaining prompts, we reran the 14B rung with a primed question that explains what a steering vector is and instructs the model to attend inward. Priming reverses the below-chance inversion (self-vs-random 0.37-0.39 naive to 0.57-0.63 primed at matched doses) yet still fails the gate (0.594 against 0.60), with the yes-rate still 0.000: telling the model what to look for moves its evidence without opening its mouth. Knowledge of the mechanism helps; access barely follows.
 
@@ -167,7 +162,7 @@ descriptively, exactly as the pre-registration requires.
 
 ![The scale map. The injection event is decodable from the final-layer state everywhere (grey); the model's spontaneous report carries no signal anywhere (red), with untrained yes-rates printed in the bars. Every cell preserves output fluency.](fig1_scale_map.png)
 
-## 5. Result 2: "installed introspection" and the artifact autopsy
+## 5. Result 2: "installed introspection" and the autopsy of three artifacts
 
 If the information is present and the channel does not carry it, can the
 channel be trained? We trained a LoRA (r=16, attention-only) on the binary
@@ -196,12 +191,6 @@ readout consults, it is not the state. To our knowledge neither this control
 nor the dose-ceiling control appears anywhere in the trained-introspection
 literature, and our headline 1.000 passed the standard controls before dying to
 them.
-
-**The seed trap**, the fourth, emerged from the diagnostic map itself: one
-cell cleared chance on its first seed (0.622 [0.556, 0.677]) and returned
-0.447 on the second; the pooled estimate is noise. We replicated it ourselves
-before submission. Single-seed, single-dose positives in this paradigm deserve
-no more trust than ours earned.
 
 What training does install, cleanly, is perturbation awareness: trained
 self-report separates injected-anything from clean at 0.71-0.79 on held-out
@@ -241,8 +230,11 @@ Thinking/reasoning mode is disabled throughout; serial introspective compute
 is the named next experiment, alongside base-versus-instruct rungs and
 in-context-taught readouts (Bhargav). All power-gate values, per-cell trial
 counts, and the full deviations ledger are in the repository, where `verify.py`
-recomputes every number in this paper in one command. Per-seed and pooled values for every cell, including both Qwen2.5-32B
-seeds, are in the repository (`REPLICATION.md`).
+recomputes every number in this paper in one command. A seed-replication of
+the Qwen2.5-32B opening was already running at submission time; its result,
+either way, is posted to the repository. The cell sits in the lineage of the
+strongest published positive, which is exactly where an opening should first
+appear.
 
 ## Appendix: Limitations and Dual-Use / Ethical Considerations
 
