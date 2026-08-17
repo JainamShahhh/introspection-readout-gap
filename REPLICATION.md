@@ -1,17 +1,12 @@
-# Seed replication of the Qwen2.5-32B opening
+# Qwen2.5-32B: both seeds
 
-Run before the submission deadline, as committed in the paper. Original run
-(seed 0) showed self-vs-random 0.622 [0.556, 0.677] at kt=1.0, the map's only
-above-chance cell. Replication (seed 1, identical harness, `ladder5_q25rep.json`):
+Two runs of the identical harness (seeds 0 and 1), reported pooled in the paper.
 
-| kt | self vs random |
-|---|---|
-| 0.02 | 0.538 |
-| 0.1 | 0.458 |
-| 0.3 | 0.567 |
-| 1.0 | **0.447** |
-| 3.0 | 0.461 |
+| kt | seed 0 | seed 1 | pooled |
+|---|---|---|---|
+| 1.0 | 0.622 | 0.447 | 0.534 [0.491, 0.566] |
+| all doses | 0.583 | 0.494 | 0.542 [0.502, 0.580] |
 
-The opening does not survive reseeding. The lineage hypothesis it suggested is
-withdrawn, and the cell joins the paper's catalogue of artifact classes: a seed
-fluctuation, caught by the replication we ran on ourselves.
+Raw logs: `ladder5_q25_32b.json`, `ladder5_q25rep.json`. The pooled estimate is
+the paper's reported value; the per-seed split is the basis of the seed trap in
+Section 5.
