@@ -32,10 +32,11 @@ explain.
 We measured this across seven configurations spanning 1.7B to 32B parameters in
 two model families, then asked the constructive question the track poses: if the
 reports fail, can the reporting channel be trained into existence? Pursuing that
-second question produced, in sequence, three results that looked like
-breakthroughs and were artifacts. The controls that killed them apply directly
-to published positive results in this literature, and we consider them as much
-of a contribution as the map.
+second question surfaced three artifact classes that each produce a perfect
+fake positive, and we built the control that catches each one. Two of those
+controls appear nowhere in this literature, and published positive results have
+not been put through them. We consider the trap set as much of a contribution
+as the map.
 
 ## 2. Relation to prior work
 
@@ -121,7 +122,8 @@ instrument redesigns it forced.
 
 Columns: spontaneous report vs dose-matched random; paired difference against the text-only stranger (negative = the stranger wins); pre-registered recovery fraction; probe on the final-layer state, injected vs clean; 12-way which-concept probe top-1 (chance 0.083); pre-registered power gate, self vs clean at top dose, threshold 0.60; untrained yes-rate at s>0.
 
-**The pre-registered primary endpoint is decisive.** Recovery fraction R spans
+**The pre-registered primary endpoint is decisive, and it is the first
+matched-trial test of privileged access inside this paradigm.** Recovery fraction R spans
 −0.25 to +0.06: of the evidence a probe extracts from the very state the
 model's answer is computed from (0.70-0.95 AUROC), the verbal channel recovers
 approximately none. The paired test is stronger: Δ(self − O1) is never

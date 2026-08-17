@@ -328,7 +328,7 @@ def run(cfg_dict: dict, tag: str):
 
 @app.local_entrypoint()
 def main(model: str = "Qwen/Qwen3-8B", tag: str = "w1", n_ctx: int = 4,
-         window: str = "W1", span: int = 1):
+         window: str = "W1", span: int = 1, seed: int = 0):
     r = run.remote({"model": model, "layer_frac": 0.667, "kl_targets": (0.02,0.1,0.3,1.0,3.0), "span": span,
-                    "n_ctx": n_ctx, "gen_tokens": 48, "seed": 0, "window": window}, tag)
+                    "n_ctx": n_ctx, "gen_tokens": 48, "seed": seed, "window": window}, tag)
     print(json.dumps(r, indent=2))
