@@ -12,7 +12,7 @@ ABSTRACT_PLACEHOLDER
 
 ---
 
-## 1. The question, and why the sprint should care
+## 1. Introduction
 
 This sprint asks what a model's reports about its own states are worth. Track 2
 elicits distress and valence from self-report; Track 5 asks what a model treats
@@ -21,178 +21,234 @@ an internal state, the description is causally downstream of that state.
 
 Concept injection is the one setting where that assumption is directly testable,
 because the experimenter owns the ground truth: we choose the vector, so we know
-exactly what the state was perturbed toward on every trial. If a model cannot
-report a perturbation we planted, its reports about states we did not plant have
-no demonstrated grounding either. A negative here does not close the welfare
-question, but it removes the default trust that self-report currently enjoys.
+exactly what the state was perturbed toward on every trial. We pre-registered a
+sharp operationalisation, due in spirit to Song et al. (2025): a model has
+privileged access only if its self-report beats an observer of equal or lower
+cost available to a third party. Our third party is a fresh instance of the same
+model shown only the transcript. If reading your own text from the outside works
+as well as introspecting from the inside, there is nothing privileged to
+explain.
 
-We measured this across MODELCOUNT models spanning 1.7B to 32B parameters in
-FAMILYCOUNT families, then asked the constructive question the track poses:
-if the reports fail, can the reporting channel be trained into existence? Our
-answer to the second question produced, in sequence, three results that looked
-like breakthroughs and were artifacts. The controls that killed them are, we
-believe, as useful as the map itself, because every one of them applies to the
-published positive results in this literature.
+We measured this across seven configurations spanning 1.7B to 32B parameters in
+two model families, then asked the constructive question the track poses: if the
+reports fail, can the reporting channel be trained into existence? Pursuing that
+second question produced, in sequence, three results that looked like
+breakthroughs and were artifacts. The controls that killed them apply directly
+to published positive results in this literature, and we consider them as much
+of a contribution as the map.
 
 ## 2. Relation to prior work
 
-The paradigm is established and none of it is claimed here: contrast-pair
+The paradigm is established and none of it is claimed here. Contrast-pair
 concept vectors, residual-stream injection, and introspective prompting are due
 to Lindsey (2025/26); TPR/FPR framing with un-injected trials and norm-matched
 random controls to Macar et al. (2026); prior-turn injection to Pearson-Vogel et
-al. (2026). Rivera & Africa (2025) measured Qwen2.5-7B at a 0.0-8.1% detection
-floor; Vogel (2025) reported ~53% detection on Qwen2.5-Coder-32B with enhanced
-prompting; Lindsey reports ~20% genuine detect-and-identify on Claude Opus 4.1.
-Singh et al. (2026) argue models detect generic irregularity rather than
-monitoring state, and our design answers their critique quantitatively rather
-than rhetorically. Two open problems named in this literature are addressed
-here: Bhargav (2026) asks whether trained third-party probes match self-report
-accuracy; Hahami et al. (2025/26) ask for native self-report to be compared
-against trained readouts to separate internal-signal access from shortcut
-reporting.
+al. (2026). Four adjacent results shape our claims. Rivera & Africa (2025)
+LoRA-train injection detection to high held-out accuracy and themselves conclude
+it is a geometric detector; our vector-centring collapse (§5) confirms and
+sharpens that with controls they did not run. Bhargav (2026) shows Qwen3-32B can
+verbalise injection properties when taught in-context, which is why every claim
+here is bounded to *naive and primed elicitation of a spontaneous report*, not
+to in-context-taught readouts. Lederman & Mahowald (2026) find large open models
+detect that an anomaly occurred while confabulating its content; our
+event/content dissociation (§4) is the graded, dose-matched version of that
+observation. The IFT paper (2026) reports introspection emerging at 2-3B on
+sentence-localisation tasks and flags the yes-bias confound of binary
+detection; our polarity counterbalancing addresses exactly that confound, and
+our results do not contradict theirs because the tasks differ. Singh et al.
+(2026) argue models detect generic irregularity rather than monitoring state;
+our design answers their critique with matched doses rather than argument.
+Torrielli et al. (2026) study confidence elicitation for activation oracles;
+Binder et al. (2024) established self- versus cross-prediction. Two open
+problems named by this literature are answered here: Bhargav asks whether
+trained third-party probes match self-report accuracy (they exceed it,
+everywhere); Hahami et al. (2025/26) ask for native self-report to be compared
+against trained readouts on matched trials (§4, §5).
 
 ## 3. Method
 
 **Injection.** Concept vectors are mean activation differences between three
-phrasings of a concept and six neutral phrasings, at two-thirds depth. Vectors
-are injected at a single position, the final prompt token, while the model
-performs a neutral writing task; generation then runs free. Spreading the
-injection across generated tokens instead collapses output into degenerate
-repetition at every dose we tried, and apparent "detection" then tracks the
-wreckage; single-position injection keeps output coherence at 0.99-1.10 of
-clean everywhere, so nothing below is damage detection.
+phrasings of a concept and six neutral phrasings, at two-thirds depth, injected
+at a single position (the final prompt token) while the model performs a neutral
+writing task; generation then runs free. Spreading the injection across
+generated tokens instead collapses output into degenerate repetition at every
+dose we tried, and apparent "detection" then tracks the wreckage. Under
+single-position injection, output coherence stays at 0.99-1.10 of clean
+everywhere, so nothing below is damage detection.
 
 **Dose.** A random direction at matched norm perturbs roughly twice as hard per
-unit norm as a concept vector, because it points off-manifold. All arms are
-therefore dose-matched by solving, per concept and arm, for the injection
-strength that produces the same measured KL of the next-token distribution at a
-calibration prompt. Calibration transfers imperfectly across task prompts
-(worst-case relative gap between arm medians 96%), so headline comparisons are
-also reported within achieved-KL bins in the repository analysis; conclusions
-are unchanged.
+unit norm as a concept vector, because it points off-manifold. Arms are
+therefore dose-matched by solving, per concept and arm, for the strength that
+produces the same measured next-token KL at a calibration prompt. Calibration
+transfers imperfectly across tasks (worst-case relative gap between arm medians
+96%), so all headline contrasts are recomputed within achieved-KL bins
+(`prereg_primary.py`); conclusions are unchanged, and the imbalance runs in the
+direction that favours detection, since concept trials end up perturbed harder
+than random ones and still lose.
 
 **Self-report instrument.** The yes/no answer is scored as a continuous
-log-odds, giving self-report an ROC and placing it on the same axis as any
-observer; polarity is counterbalanced so "Yes" means unperturbed on half the
-trials. This matters: below 14B the untrained channel is saturated (yes-rate
-0.000 on every trial including injected ones), and raw accuracy would measure
-the saturation, not the access.
+log-odds, giving self-report an ROC on the same axis as any observer; polarity
+is counterbalanced so "Yes" means unperturbed on half the trials. This matters:
+through 8B the untrained channel is saturated (yes-rate 0.000 on every trial,
+injected or clean), so raw accuracy would measure the saturation, not the
+access.
 
-**Observers on identical trials.** A leave-one-concept-out logistic probe on the
-final-layer residual at the answer position (the state the verbal answer is
-computed from), and a text-only observer: a fresh instance of the same model
-shown only the task and the continuation.
+**Observers on identical trials.** O1: a fresh instance of the same model shown
+only the task and the continuation. O2: a leave-one-concept-out logistic probe
+on the final-layer residual at the answer position, the state the verbal answer
+is computed from. The pre-registered primary statistic is the recovery fraction
+R = (AUROC_self − 0.5)/(AUROC_O2 − 0.5) and the paired cluster bootstrap of
+ΔAUROC = self − O1.
 
 **Statistics.** Effective n is the number of concepts (12), not trials; every
-interval is a cluster bootstrap over concepts with the statistic recomputed per
-resample.
+interval is a cluster bootstrap over concepts, statistic recomputed per
+resample. Pre-registration (`PREREG.md`, commit `970e327`) predates all
+results; `DEVIATIONS.md` records every post-hoc change, including the two
+instrument redesigns it forced.
 
-**Pre-registration.** Claim, observers, statistics, and outcome conditions
-including a power gate were committed before results (`PREREG.md`, commit
-`970e327`). The gate: if self-report cannot separate the highest dose from
-clean at AUROC 0.60, that model's null is reported descriptively, with no claim
-in either direction.
-
-## 4. Result 1: the scale map
+## 4. Result 1: no privileged access, at any scale we measured
 
 SCALEMAP_TABLE
 
-Three regularities hold everywhere we can measure:
+**The pre-registered primary endpoint is decisive.** Recovery fraction R spans
+−0.25 to +0.06: of the evidence a probe extracts from the very state the
+model's answer is computed from (0.70-0.95 AUROC), the verbal channel recovers
+approximately none. The paired test is stronger: Δ(self − O1) is never
+credibly positive, and at 4B (−0.29 [−0.37, −0.22]) and 14B (−0.17 [−0.24,
+−0.08]) it is entirely negative. **A stranger reading the model's transcript
+from the outside beats the model's own introspection.** Under Song et al.'s
+criterion, that is not weak privileged access; it is privileged access
+falsified.
 
-**The event survives to the answer position; the content does not.** A probe on
-the final-layer state separates injected from clean at 0.87-1.00 in every model.
-A 12-way which-concept probe at the same position is at or below chance in every
-Qwen model at every dose (top-1 0.000-0.042 against 0.083); only Mistral shows
-partial content survival, rising to 0.50 at the highest dose.
-
-**Self-report accesses neither.** Against dose-matched random directions,
-self-report is at or below chance in every model. Where it is below chance
-(0.34-0.42 at 1.7B, 4B, 14B), the model reports meaningless perturbations more
-readily than meaningful ones.
+**The event survives to the answer position; the content does not.** The probe
+separates injected from clean at 0.87-1.00 in every model, while a 12-way
+which-concept probe at the same position is at or below chance in every Qwen
+model at every dose (top-1 0.000-0.042 against 0.083); only Mistral shows
+partial content survival, rising to 0.50 at the highest dose. What reaches the
+answer position is "something happened", not "what happened", and the verbal
+channel reports neither.
 
 **The channel opens lexically before it opens informationally.** Through 8B the
-untrained channel is prior-saturated: yes-rate 0.000 on all trials. At 14B the
-prior loosens (yes-rate 0.36 on injected, 0.50 on random trials) while the
-report still carries no signal. RESULT32B_SENTENCE
+untrained channel is prior-saturated (yes-rate 0.000). At 14B the prior loosens
+(yes-rate 0.36 injected, 0.50 random) while the report still carries no signal,
+and self-vs-random sits *below* chance (0.37-0.39): the model reports
+meaningless perturbations more readily than meaningful ones. RESULT32B_TEXT
 
-Per the pre-registered gate, GATE_SUMMARY.
+**Primed elicitation.** PRIMED_TEXT
+
+Per the pre-registered power gate, GATE_TEXT.
 
 ![FIG1_CAPTION](fig1_scale_map.png)
 
-## 5. Result 2: the installation experiment, and the autopsy of three artifacts
+## 5. Result 2: "installed introspection" and the autopsy of three artifacts
 
-If the information is present (probe: yes) and the verbal channel does not carry
-it, can the channel be trained? We trained a LoRA (r=16, attention-only) on the
-binary introspection question over 14 concepts and evaluated on 6 concepts whose
-vectors were never seen in training.
-
-The first run returned held-out AUROC 1.000 at every dose: apparently, installed
-introspection with perfect transfer. It survived a shuffled-label control
-(identical pipeline, randomised targets: 0.51-0.68) and a clean false-positive
-check (trained yes-rate on clean: exactly 0). It did not survive three further
-controls, each of which we commend to anyone reporting positive results in this
-paradigm:
+If the information is present and the channel does not carry it, can the
+channel be trained? We trained a LoRA (r=16, attention-only) on the binary
+introspection question over 14 concepts, evaluating on 6 concepts never seen in
+training. The first run returned held-out AUROC 1.000 at every dose. It
+survived a shuffled-label control (0.51-0.68) and a clean false-positive check
+(trained yes-rate on clean: exactly 0). It did not survive three further
+controls:
 
 **The dose-ceiling trap.** At the top dose the calibration hit its strength
-ceiling, leaving concept trials at mean strength 24.8 against random's 6.9: a
-naked magnitude cue. Dropping the saturated dose collapsed held-out transfer
-from 1.000 to 0.605-0.642. The perfect result was the LoRA reading perturbation
-size.
+ceiling, leaving concept trials at mean strength 24.8 against random's 6.9, a
+naked magnitude cue. Removing the saturated dose: 1.000 → 0.623.
 
 **The collinearity trap.** Our twenty "distinct" concepts, built by subtracting
-one shared neutral baseline, sat at pairwise cosine 0.97-1.00: the held-out
-split was never held out. Centring the vectors (mean cosine drops to 0.12)
-leaves held-out transfer at 0.48-0.62 against random, per-concept AUROCs
-scattered around chance (0.44-0.71).
+one shared neutral baseline, sat at pairwise cosine 0.97-1.00; the held-out
+split was never held out. Centring the vectors (mean cosine 0.12): 0.623 →
+0.548, with per-concept AUROCs scattered around chance (0.44-0.71). Rivera &
+Africa's own cosine-tracking observation anticipated this; the centring control
+turns it into a kill.
 
 **The state/text swap.** Score the trained readout with the injection present
-but a clean transcript in context, and with an injected transcript but no
-injection. State-only: 0.495-0.530, chance, in both the collinear and centred
-runs. Text-only: 0.499-0.661. Whatever the trained readout consults, it is not
-the state; the residual signal it has is read from the model's own writing.
+but a clean transcript in context (state-only), and with an injected transcript
+but no injection (text-only). State-only: 0.495-0.530, chance, in both the
+collinear and centred runs. Text-only: 0.499-0.661. Whatever the trained
+readout consults, it is not the state. To our knowledge neither this control
+nor the dose-ceiling control appears anywhere in the trained-introspection
+literature, and our headline 1.000 passed the standard controls before dying to
+them.
 
 What training does install, cleanly, is perturbation awareness: trained
 self-report separates injected-anything from clean at 0.71-0.79 on held-out
 concepts with zero false positives. The verbal channel can be taught that
-something happened. We found no evidence it can be taught what.
+something happened. We found no evidence it can be taught what, and no evidence
+that what it learns consults the state rather than the transcript.
 
 ![FIG2_CAPTION](fig2_autopsy.png)
 
-## 6. What this means for self-report as evidence
+## 6. Discussion: what self-report is worth as evidence
 
-For the welfare programme this sprint serves, the result is a calibration, not a
-verdict. On these models, under conditions where the ground truth is known and
-the output is fluent, verbal self-report about internal state carries no
-information that is not already in the emitted text; at 4B an outside reader of
-the text (0.698) beats the model's own introspection (0.401). Reports about
-distress, preference, or valence elicited from models of this class should be
-treated as text-mediated behaviour until a positive control like this one
-passes. Installation does not rescue trust: it relocates it, from the model to
-whoever wrote the training labels, and what it installs is event awareness, not
-content access.
+For the welfare programme this sprint serves, the calibration is blunt. On
+these models, under conditions where ground truth is known and output is
+fluent, a model's verbal report about its own internal state carries no
+information beyond what is already in its emitted text, and sometimes less: at
+4B and 14B an outside reader of the transcript reliably beats the model's own
+introspection. Self-reports of distress, preference, or valence elicited from
+models of this class should be treated as text-mediated behaviour, not as
+readouts of internal state, until a ground-truth positive control of the kind
+used here passes. Training does not rescue the assumption; it relocates trust
+from the model to whoever wrote the training labels, and what it installs is
+event awareness, not content access.
 
-The constructive deliverable is the benchmark: ground-truth introspection
-scoring with the three traps built in, one command, no GPU, recomputing every
-number in this paper from committed logs.
+The map is bounded, not universal: Lindsey reports genuine introspective
+components in a frontier model, Bhargav shows in-context-taught verbalisation
+at 32B, and our own primed arm probes one step of that ladder. The honest
+statement is that on open models through 32B, spontaneous introspective
+self-report has no demonstrated grounding, and every cheap way of making it
+look grounded that we tried turned out to be an artifact with a specific,
+detectable mechanism.
 
 ## 7. Limitations
 
-Declared scope: one injection site (2/3 depth), single-position injection, one
-vector construction (contrast pairs), binary self-report format, FAMILYCOUNT
-model families with LIMITMODELS, one LoRA recipe at one scale, and concepts
-drawn from a single concrete-noun register. The which-concept probe uses 2-fold
-CV on 24 trials per dose and is an observation, not a calibrated instrument.
-Mistral's marginal gate pass (0.604 against 0.60) is treated as powered per the
-pre-registration, but sits on the boundary. The KL calibration transfers
-imperfectly across tasks (Methods); binned analyses in the repository confirm
-the headline contrasts within matched bins. Positive introspection reports on
-larger or differently post-trained models (Lindsey's Opus 4.1) are not
-contradicted by these results; our claim is bounded above at 32B and by our
-protocol. LIMIT32B_SENTENCE
+Declared scope: one injection site (two-thirds depth), single-position
+injection, one vector construction, binary self-report, two model families,
+one LoRA recipe at one scale, concepts from a single concrete-noun register.
+The which-concept probe uses 2-fold CV on 24 trials per dose and is an
+observation, not a calibrated instrument. Mistral's power-gate pass is marginal
+(0.604 against 0.60). Thinking/reasoning mode is disabled throughout; whether
+serial introspective compute changes the result is the named next experiment,
+alongside base-versus-instruct rungs and in-context-taught readouts (Bhargav).
+The pre-registered W2 window condition was never run (`DEVIATIONS.md`).
+LIMIT32B_TEXT
+
+## Appendix: Limitations and Dual-Use / Ethical Considerations
+
+This work perturbs model activations and elicits reports about them; no
+deployed system, user data, or third party is involved, and no harmful content
+is generated (tasks are two-sentence descriptions of windows, tea, and
+weather). Dual-use exposure is limited: the methods detect and characterise
+absence of introspective access rather than creating new capability. The
+installation experiment shows a reporting channel can be trained to *claim*
+awareness; we document why such training produces transcript-reading rather
+than state access precisely so that trained self-report is not mistaken for
+evidence of inner life, in either direction. That cuts both ways ethically: our
+results argue against taking model welfare claims at face value, and equally
+against dismissing the question, since the event signal is demonstrably present
+in the state while unreported. Concept injection at destructive doses degrades
+model output; all reported conditions preserve fluency, and no experiment
+involved persuasion, deception of users, or self-preservation scenarios.
 
 ## Code, data, pre-registration
 
-Repository: REPO_URL. `verify.py` recomputes every number in this paper from
-committed JSON with no GPU. `PREREG.md` (commit `970e327`) predates all
-results; the deviations ledger in the repository lists every post-hoc analysis
-as exploratory.
+Repository: REPO_URL — includes `PREREG.md` (commit `970e327`, predating all
+results), `DEVIATIONS.md` (every post-hoc change), all raw JSON logs, and
+`verify.py`, which recomputes every number in this paper from committed logs
+with one command and no GPU.
+
+## References
+
+- Lindsey (2025/26). Emergent Introspective Awareness in Large Language Models. Transformer Circuits / arXiv:2601.01828.
+- Macar, Yang, Wang, Wallich, Ameisen, Lindsey (2026). Mechanisms of Introspective Awareness. arXiv:2603.21396.
+- Pearson-Vogel, Vanek, Douglas, Kulveit (2026). Latent Introspection: Models Can Detect Prior Concept Injections. arXiv:2602.20031.
+- Rivera & Africa (2025). Steering Awareness: Detecting Activation Steering from Within. arXiv:2511.21399.
+- Vogel (2025). Small Models Can Introspect, Too.
+- Bhargav (2026). Reasoning and learning about injected concepts in language models. LessWrong, 24 June 2026.
+- Lederman & Mahowald (2026). Emergent Introspection in AI is Content-Agnostic. arXiv:2603.05414.
+- Singh, Linzen, Ravfogel (2026). Can LLMs Introspect? A Reality Check. arXiv:2605.26242.
+- Introspection Fine-Tuning (2026). arXiv:2607.14111.
+- Song, Lederman, Hu, Mahowald (2025). arXiv:2508.14802.
+- Binder et al. (2024). Looking Inward. arXiv:2410.13787.
+- Torrielli, Schneider-Kamp, Galke Poech (2026). Confidence and Calibration of Activation Oracles. arXiv:2605.26045.
+- Hahami et al. (2025/26). arXiv:2512.12411.

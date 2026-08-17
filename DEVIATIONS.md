@@ -46,3 +46,15 @@ audit which claims are confirmatory and which are exploratory.
    training (rerun after an out-of-place rewrite, results unchanged in kind);
    a NameError in the swap-test scorer crashed one run before saving (rerun);
    `sentencepiece` missing from the image for Mistral (rerun).
+
+9. **The pre-registered W2 window condition (hook active during the answer) was
+   never run.** All diagnostic ladders are W1 only. Disclosed rather than run:
+   W2 steers the computation performing the introspection, so a positive there
+   would be uninterpretable anyway; the prereg listed it as a contrast, and we
+   record its absence instead of quietly dropping it.
+
+10. **The primed-elicitation arm (ladder6) and the 14B/32B rungs are
+    post-registration additions**, responding to the literature's
+    enhanced-prompting positives (Vogel; Pearson-Vogel et al.) and to scale
+    coverage. Same harness and scoring throughout; no analysis choices changed
+    after their results were seen.
