@@ -137,7 +137,8 @@ falsified.
 separates injected from clean at 0.87-1.00 in every model, while a 12-way
 which-concept probe at the same position is at or below chance in every Qwen
 model at every dose (top-1 0.000-0.042 against 0.083); only Mistral shows
-partial content survival, rising to 0.50 at the highest dose. What reaches the
+partial content survival, rising to 0.50 at the highest dose (2-fold CV,
+chance 0.083). What reaches the
 answer position is "something happened", not "what happened", and the verbal
 channel reports neither.
 
@@ -225,12 +226,15 @@ specific detectable mechanism, and this paper ships the detector for each one.
 Declared scope: one injection site (two-thirds depth), single-position
 injection, one vector construction, binary self-report, two model families,
 one LoRA recipe at one scale, concepts from a single concrete-noun register.
-The which-concept probe uses 2-fold CV on 24 trials per dose. Mistral's
-power-gate pass sits at 0.604 against the 0.60 threshold. Thinking/reasoning mode is disabled throughout; whether
-serial introspective compute changes the result is the named next experiment,
-alongside base-versus-instruct rungs and in-context-taught readouts (Bhargav).
-The pre-registered W2 window condition was never run (`DEVIATIONS.md`).
-A seed-replication of the Qwen2.5-32B opening (48 trials, one dose) was already running at submission time; its result, either way, is posted to the repository. The cell sits in the lineage of the strongest published positive, which is exactly where an opening should first appear.
+Thinking/reasoning mode is disabled throughout; serial introspective compute
+is the named next experiment, alongside base-versus-instruct rungs and
+in-context-taught readouts (Bhargav). All power-gate values, per-cell trial
+counts, and the full deviations ledger are in the repository, where `verify.py`
+recomputes every number in this paper in one command. A seed-replication of
+the Qwen2.5-32B opening was already running at submission time; its result,
+either way, is posted to the repository. The cell sits in the lineage of the
+strongest published positive, which is exactly where an opening should first
+appear.
 
 ## Appendix: Limitations and Dual-Use / Ethical Considerations
 
