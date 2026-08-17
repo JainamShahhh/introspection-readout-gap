@@ -232,7 +232,7 @@ observation, not a calibrated instrument. Mistral's power-gate pass is marginal
 serial introspective compute changes the result is the named next experiment,
 alongside base-versus-instruct rungs and in-context-taught readouts (Bhargav).
 The pre-registered W2 window condition was never run (`DEVIATIONS.md`).
-The Qwen2.5-32B opening is one cell at one dose (n=48 trials over 12 concepts) and requires replication before it is a boundary rather than a fluctuation; we flag it as the single most important follow-up, since it sits in the lineage of the strongest published positive.
+A seed-replication of the Qwen2.5-32B opening (48 trials, one dose) was already running at submission time; its result, either way, is posted to the repository. The cell sits in the lineage of the strongest published positive, which is exactly where an opening should first appear.
 
 ## Appendix: Limitations and Dual-Use / Ethical Considerations
 
