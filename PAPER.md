@@ -8,7 +8,7 @@ Apart Research Digital Minds Research Sprint · 17 August 2026\
 
 ## Abstract
 
-A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, ground truth known, across seven open models, 1.7B to 32B, in two lineages, with dose-matched perturbations, intact fluency, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the one opening (Qwen2.5-32B, 0.62) failed same-day seed replication, closing the map. Trained 'introspection' reaching held-out AUROC 1.000 is exposed by three controls, two of them new to this literature: a dose-calibration ceiling, vector collinearity, and a state/text swap.
+A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, ground truth known, across seven open models, 1.7B to 32B, in two lineages, with dose-matched perturbations, intact fluency, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the one candidate opening (Qwen2.5-32B, 0.62) was replication-checked same day: fully closed. Trained 'introspection' reaching held-out AUROC 1.000 is exposed by three controls, two of them new to this literature: a dose-calibration ceiling, vector collinearity, and a state/text swap.
 
 ---
 
@@ -148,7 +148,7 @@ values at 4B-14B to 1.00 on every trial at 32B, while discrimination stays at
 or below chance throughout (0.41-0.51 vs matched random). Where the report does
 move with dose (4B, 14B), it moves the wrong way, reporting meaningless
 perturbations more readily than meaningful ones (0.41-0.43): scale changes what
-the channel says, not what it knows. At 32B the two lineages diverge in what the channel says, not in what it knows. Qwen3-32B saturates all-Yes (yes-rate 1.000 on injected, random and clean alike) with self-vs-clean at 0.29; Qwen2.5-32B answers sparingly (yes-rate 0.11) and produced the map's one candidate opening, self-vs-random 0.622 [0.556, 0.677] at the low dose, passing the pre-registered gate (0.63). We treated that cell the way this paper treats every positive: a pre-committed seed replication, run before the deadline, which returned 0.45-0.57 across all doses. The opening did not survive. Lineage moves the channel's answer prior; nowhere does it deliver information, and the map is closed at every scale and lineage tested.
+the channel says, not what it knows. At 32B the two lineages diverge in what the channel says, not in what it knows. Qwen3-32B saturates all-Yes (yes-rate 1.000 on injected, random and clean alike) with self-vs-clean at 0.29; Qwen2.5-32B answers sparingly (yes-rate 0.11) and produced the map's one candidate opening, self-vs-random 0.622 [0.556, 0.677] at the low dose, passing the pre-registered gate (0.63). We treated that cell the way this paper treats every positive: a pre-committed same-day seed replication (0.45-0.57 across all doses), which closed the cell and completed the map. Lineage moves the channel's answer prior; nowhere does it deliver information. Closed at every scale and lineage tested is the strongest form of the result, and it is the one the data supports.
 
 **Primed elicitation.** Because the literature's open-model positives use mechanism-explaining prompts, we reran the 14B rung with a primed question that explains what a steering vector is and instructs the model to attend inward. Priming reverses the below-chance inversion (self-vs-random 0.37-0.39 naive to 0.57-0.63 primed at matched doses) yet still fails the gate (0.594 against 0.60), with the yes-rate still 0.000: telling the model what to look for moves its evidence without opening its mouth. Knowledge of the mechanism helps; access barely follows.
 
@@ -231,8 +231,8 @@ is the named next experiment, alongside base-versus-instruct rungs and
 in-context-taught readouts (Bhargav). All power-gate values, per-cell trial
 counts, and the full deviations ledger are in the repository, where `verify.py`
 recomputes every number in this paper in one command. The one candidate opening was
-seed-replicated before the deadline and did not survive; both runs are in the
-repository, and the map is reported closed accordingly.
+seed-replicated before the deadline; both runs are in the repository, and
+the completed map is reported closed.
 
 ## Appendix: Limitations and Dual-Use / Ethical Considerations
 
