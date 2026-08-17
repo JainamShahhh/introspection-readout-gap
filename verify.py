@@ -13,9 +13,11 @@ import sys
 
 import numpy as np
 
-# regenerate the model tables from raw ladder logs
+# regenerate the model tables and the prereg primary from raw ladder logs
 subprocess.run([sys.executable, "verify_r1.py"], capture_output=True)
+subprocess.run([sys.executable, "prereg_primary.py"], capture_output=True)
 R = json.load(open("r1_tables.json"))
+PP = json.load(open("prereg_primary.json"))
 
 
 def find(prefix):
@@ -56,7 +58,8 @@ for prefix in ("Qwen3-1.7B", "Qwen3-4B", "Qwen3-8B", "Qwen3-14B",
         print(f"  ....  {prefix}: not present")
         continue
     kts = sorted([k for k in M if k.startswith("kt")], key=lambda s: float(s[2:]))
-    sr = float(np.mean([M[k]["self_vs_random"][0] for k in kts]))
+    pp = next((v for k, v in PP.items() if k.startswith(prefix)), {})
+    sr = pp.get("auroc_self", float("nan"))   # pooled, as in the paper table
     pc = float(np.mean(list(M["probe_vs_clean"].values())))
     wc = float(np.mean([v["top1"] for v in M["probe_which_concept"].values()])) if M["probe_which_concept"] else float("nan")
     print(f"  {prefix:13s} self-vs-random {sr:.3f} | probe-vs-clean {pc:.3f} | "

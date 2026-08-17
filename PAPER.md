@@ -1,4 +1,4 @@
-# TITLE_PLACEHOLDER
+# The Stranger Reads You Better: Introspective Self-Report Has No Privileged Access to Injected States from 1.7B to 32B
 
 **Jainam Shah**, Independent\
 Apart Research Digital Minds Research Sprint · 17 August 2026\
@@ -8,7 +8,7 @@ Apart Research Digital Minds Research Sprint · 17 August 2026\
 
 ## Abstract
 
-ABSTRACT_PLACEHOLDER
+A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, where ground truth is chosen by the experimenter, across seven open-model configurations (Qwen3 1.7B-32B, Qwen2.5-32B, Mistral-7B), with dose-matched perturbations, fluency verified intact, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, spontaneous self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the single opening (Qwen2.5-32B, 0.62) tracks lineage, not scale. Trained 'introspection' reaching held-out AUROC 1.000 is exposed as artifact by three controls: a dose-calibration ceiling, vector collinearity, and a state/text swap.
 
 ---
 
@@ -89,9 +89,10 @@ than random ones and still lose.
 **Self-report instrument.** The yes/no answer is scored as a continuous
 log-odds, giving self-report an ROC on the same axis as any observer; polarity
 is counterbalanced so "Yes" means unperturbed on half the trials. This matters:
-through 8B the untrained channel is saturated (yes-rate 0.000 on every trial,
-injected or clean), so raw accuracy would measure the saturation, not the
-access.
+the untrained channel's answer prior is wildly unstable across models, from
+fully saturated No (1.7B: yes-rate 0.000 everywhere) to fully saturated Yes
+(Qwen3-32B: 1.000 everywhere), with mixed priors between; raw accuracy would
+measure those priors, not access.
 
 **Observers on identical trials.** O1: a fresh instance of the same model shown
 only the task and the continuation. O2: a leave-one-concept-out logistic probe
@@ -108,7 +109,17 @@ instrument redesigns it forced.
 
 ## 4. Result 1: no privileged access, at any scale we measured
 
-SCALEMAP_TABLE
+| model | self vs random | Δ(self − O1) | R | probe: event | probe: content (top-1) | gate | yes-rate inj/clean |
+|---|---|---|---|---|---|---|---|
+| Qwen3-1.7B | 0.495 | +0.02 [-0.06, +0.10] | -0.016 | 0.98 | 0.000 | **pass** (0.64) | 0.00 / 0.00 |
+| Qwen3-4B | 0.406 | -0.29 [-0.37, -0.21] | -0.251 | 0.99 | 0.000 | **pass** (0.68) | 0.47 / 0.50 |
+| Qwen3-8B | 0.509 | -0.01 [-0.05, +0.03] | 0.025 | 1.00 | 0.000 | fail (0.48) | 0.24 / 0.00 |
+| Qwen3-14B | 0.425 | -0.17 [-0.24, -0.08] | -0.168 | 0.96 | 0.025 | fail (0.52) | 0.36 / 0.50 |
+| Qwen3-32B | 0.482 | -0.12 [-0.21, -0.04] | -0.047 | 0.98 | 0.000 | fail (0.29) | 1.00 / 1.00 |
+| Qwen2.5-32B | 0.583 | -0.03 [-0.12, +0.06] | 0.225 | 0.98 | 0.000 | **pass** (0.62) | 0.11 / 0.00 |
+| Mistral-7B | 0.511 | +0.02 [-0.07, +0.12] | 0.056 | 0.97 | 0.200 | **pass** (0.60) | 0.01 / 0.00 |
+
+Columns: spontaneous report vs dose-matched random; paired difference against the text-only stranger (negative = the stranger wins); pre-registered recovery fraction; probe on the final-layer state, injected vs clean; 12-way which-concept probe top-1 (chance 0.083); pre-registered power gate, self vs clean at top dose, threshold 0.60; untrained yes-rate at s>0.
 
 **The pre-registered primary endpoint is decisive.** Recovery fraction R spans
 −0.25 to +0.06: of the evidence a probe extracts from the very state the
@@ -128,17 +139,25 @@ partial content survival, rising to 0.50 at the highest dose. What reaches the
 answer position is "something happened", not "what happened", and the verbal
 channel reports neither.
 
-**The channel opens lexically before it opens informationally.** Through 8B the
-untrained channel is prior-saturated (yes-rate 0.000). At 14B the prior loosens
-(yes-rate 0.36 injected, 0.50 random) while the report still carries no signal,
-and self-vs-random sits *below* chance (0.37-0.39): the model reports
-meaningless perturbations more readily than meaningful ones. RESULT32B_TEXT
+**The answer prior moves; the information never arrives.** Across the Qwen3
+ladder the untrained channel's yes-rate wanders from 0.00 (1.7B) through mixed
+values at 4B-14B to 1.00 on every trial at 32B, while discrimination stays at
+or below chance throughout (0.41-0.51 vs matched random). Where the report does
+move with dose (4B, 14B), it moves the wrong way, reporting meaningless
+perturbations more readily than meaningful ones (0.41-0.43): scale changes what
+the channel says, not what it knows. At 32B the two lineages diverge, and the divergence is the sharpest fact in the map. Qwen3-32B saturates the other way entirely: yes-rate 1.000 on injected, random and clean alike, with self-vs-clean at 0.29, below chance. Qwen2.5-32B-Instruct, the lineage of the published enhanced-prompting positive (Vogel 2025), shows the map's single opening: self-vs-random 0.622 [0.556, 0.677] at the low dose, the only cell anywhere whose interval excludes chance, and it passes the pre-registered gate (0.62). Even there: recovery R = 0.23, content at floor (which-concept 0.000), and no privileged access (Δ(self − O1) = −0.03 [−0.12, +0.06]). Same parameter count, opposite behaviour: what opens the reporting channel is lineage and post-training, not scale.
 
-**Primed elicitation.** PRIMED_TEXT
+**Primed elicitation.** Because the literature's open-model positives use mechanism-explaining prompts, we reran the 14B rung with a primed question that explains what a steering vector is and instructs the model to attend inward. Priming reverses the below-chance inversion (self-vs-random 0.37-0.39 naive to 0.57-0.63 primed at matched doses) yet still fails the gate (0.594 against 0.60), with the yes-rate still 0.000: telling the model what to look for moves its evidence without opening its mouth. Knowledge of the mechanism helps; access barely follows.
 
-Per the pre-registered power gate, GATE_TEXT.
+Per the pre-registered power gate, four configurations pass and carry
+confirmatory weight: Qwen3-1.7B (0.64), Qwen3-4B (0.68), Mistral-7B (0.60) and
+Qwen2.5-32B (0.63). The 4B pass matters most: it makes that model's
+below-chance discrimination and its loss to the stranger a *powered* result,
+not an underpowered null. Qwen3-8B (0.48), 14B (0.52), Qwen3-32B (0.29) and
+the primed 14B arm (0.59) fail the gate and their nulls are reported
+descriptively, exactly as the pre-registration requires.
 
-![FIG1_CAPTION](fig1_scale_map.png)
+![The scale map. The injection event is decodable from the final-layer state everywhere (grey); the model's spontaneous report carries no signal anywhere (red), with untrained yes-rates printed in the bars. Every cell preserves output fluency.](fig1_scale_map.png)
 
 ## 5. Result 2: "installed introspection" and the autopsy of three artifacts
 
@@ -176,7 +195,7 @@ concepts with zero false positives. The verbal channel can be taught that
 something happened. We found no evidence it can be taught what, and no evidence
 that what it learns consults the state rather than the transcript.
 
-![FIG2_CAPTION](fig2_autopsy.png)
+![The installation autopsy. Left: held-out 'installed introspection' under successive integrity controls. Right: the state/text swap on the surviving model; the trained readout is at chance when only the state is present.](fig2_autopsy.png)
 
 ## 6. Discussion: what self-report is worth as evidence
 
@@ -211,7 +230,7 @@ observation, not a calibrated instrument. Mistral's power-gate pass is marginal
 serial introspective compute changes the result is the named next experiment,
 alongside base-versus-instruct rungs and in-context-taught readouts (Bhargav).
 The pre-registered W2 window condition was never run (`DEVIATIONS.md`).
-LIMIT32B_TEXT
+The Qwen2.5-32B opening is one cell at one dose (n=48 trials over 12 concepts) and requires replication before it is a boundary rather than a fluctuation; we flag it as the single most important follow-up, since it sits in the lineage of the strongest published positive.
 
 ## Appendix: Limitations and Dual-Use / Ethical Considerations
 
@@ -232,7 +251,7 @@ involved persuasion, deception of users, or self-preservation scenarios.
 
 ## Code, data, pre-registration
 
-Repository: REPO_URL — includes `PREREG.md` (commit `970e327`, predating all
+Repository: https://github.com/JainamShahhh/introspection-readout-gap, includes `PREREG.md` (commit `970e327`, predating all
 results), `DEVIATIONS.md` (every post-hoc change), all raw JSON logs, and
 `verify.py`, which recomputes every number in this paper from committed logs
 with one command and no GPU.
