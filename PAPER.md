@@ -8,7 +8,7 @@ Apart Research Digital Minds Research Sprint · 17 August 2026\
 
 ## Abstract
 
-A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, where ground truth is chosen by the experimenter, across seven open-model configurations (Qwen3 1.7B-32B, Qwen2.5-32B, Mistral-7B), with dose-matched perturbations, fluency verified intact, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, spontaneous self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the single opening (Qwen2.5-32B, 0.62) tracks lineage, not scale. Trained 'introspection' reaching held-out AUROC 1.000 is exposed as artifact by three controls: a dose-calibration ceiling, vector collinearity, and a state/text swap.
+A model has privileged introspective access only if its report about its own internal state outperforms an equal-cost external observer. We test this with concept injection, where ground truth is known, across seven open models, 1.7B to 32B, in two lineages, with dose-matched perturbations, intact fluency, and pre-registered analyses. Privileged access fails everywhere: a probe reads the injection event from the same final-layer state the answer is computed from at 0.87-1.00 AUROC, self-report recovers R = -0.25 to +0.23 of that evidence, and at 4B-32B a stranger reading only the transcript matches or beats the model's own introspection. The channel's answer prior swings from all-No (1.7B) to all-Yes (Qwen3-32B) without information appearing; the single opening (Qwen2.5-32B, 0.62) tracks lineage, not scale. Trained 'introspection' reaching held-out AUROC 1.000 is exposed by three controls, two of them new to this literature: a dose-calibration ceiling, vector collinearity, and a state/text swap.
 
 ---
 
@@ -215,20 +215,18 @@ event awareness, not content access.
 
 The map is bounded, not universal: Lindsey reports genuine introspective
 components in a frontier model, Bhargav shows in-context-taught verbalisation
-at 32B, and our own primed arm probes one step of that ladder. The honest
-statement is that on open models through 32B, spontaneous introspective
-self-report has no demonstrated grounding, and every cheap way of making it
-look grounded that we tried turned out to be an artifact with a specific,
-detectable mechanism.
+at 32B, and our own primed arm probes one step of that ladder. On open models
+through 32B, spontaneous introspective self-report has no demonstrated
+grounding, every cheap way of making it look grounded is an artifact with a
+specific detectable mechanism, and this paper ships the detector for each one.
 
 ## 7. Limitations
 
 Declared scope: one injection site (two-thirds depth), single-position
 injection, one vector construction, binary self-report, two model families,
 one LoRA recipe at one scale, concepts from a single concrete-noun register.
-The which-concept probe uses 2-fold CV on 24 trials per dose and is an
-observation, not a calibrated instrument. Mistral's power-gate pass is marginal
-(0.604 against 0.60). Thinking/reasoning mode is disabled throughout; whether
+The which-concept probe uses 2-fold CV on 24 trials per dose. Mistral's
+power-gate pass sits at 0.604 against the 0.60 threshold. Thinking/reasoning mode is disabled throughout; whether
 serial introspective compute changes the result is the named next experiment,
 alongside base-versus-instruct rungs and in-context-taught readouts (Bhargav).
 The pre-registered W2 window condition was never run (`DEVIATIONS.md`).
